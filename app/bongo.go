@@ -31,7 +31,6 @@ var cached_templates = template.Must(template.ParseGlob("app/templates/*.html"))
 func init() {
 	http.HandleFunc("/api/", router)
 	http.HandleFunc("/logout", logout)
-	http.HandleFunc("/update", update)
 	http.HandleFunc("/", home)
 }
 
@@ -95,8 +94,9 @@ func post(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// return Ok
-	fmt.Fprintf(res, "{'Ok'}")
+	// return object 
+	task_json, _ := json.Marshal(task)
+	fmt.Fprintf(res, string(task_json))
 }
 
 func put(res http.ResponseWriter, req *http.Request) {
@@ -113,7 +113,9 @@ func put(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(res, "'{'Ok'}")
+	// return object 
+	task_json, _ := json.Marshal(task)
+	fmt.Fprintf(res, string(task_json))
 }
 
 
@@ -137,33 +139,11 @@ func archive(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(res, "'{'Ok'}")
+	// return object 
+	task_json, _ := json.Marshal(task)
+	fmt.Fprintf(res, string(task_json))
 }
 
-func update(res http.ResponseWriter, req *http.Request) {
-
-	c := appengine.NewContext(req)
-	q := datastore.NewQuery("Task").Limit(50)
-	tasks := make([]Task, 0, 50)
-
-	keys, err := q.GetAll(c, &tasks)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	for i, key := range keys {
-		if tasks[i].State == "" {
-			tasks[i].State = "active"
-		}
-
-		_, err := datastore.Put(c, key, &tasks[i])
-		if err != nil {
-			http.Error(res, err.Error(), http.StatusInternalServerError)
-		}
-	}
-	fmt.Fprintf(res, "'{'Ok'}")
-}
 
 func renderTemplate(res http.ResponseWriter, template string, p *Page) {
 
