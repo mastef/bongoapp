@@ -31,7 +31,6 @@ You can check out how I setup Backbone and Go. There were a few tricky bits with
 If you were interested in hacking on it to learn, here are a few things that I haven't gotten to that I think it could use. Feel free to push me any changes.
 
 * Add ability to edit tasks
-* Add create on enter
 * Allow user created lists (hardcoded now)
 * Order list items to set priority
 

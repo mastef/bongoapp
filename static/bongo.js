@@ -106,6 +106,7 @@ $(function(){
 
 		events: {
 			"click #save-task"				: "createOnSave",
+			"keypress #new-task-title"		: "checkForEnter",
 			"click #filter-btn li"			: "filter_category"
 		},
 
@@ -146,6 +147,12 @@ $(function(){
 			});
 			this.title.val('');			// reset form data
 			window.location.hash = '';	// close dialog box
+		},
+
+		checkForEnter: function(e) {
+			if (e.keyCode == 13) {
+				this.createOnSave()
+			}
 		},
 
 
