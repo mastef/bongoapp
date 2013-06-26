@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type Page struct {
@@ -19,9 +19,9 @@ type Page struct {
 type Task struct {
 	Id           int64 `datastore:"-"` // instructs datastore to ignore
 	Title        string
-	Details		 string
+	Details      string
 	Category     string
-	State		 string
+	State        string
 	Dt_completed int64
 	Dt_created   int64
 }
@@ -35,6 +35,8 @@ func init() {
 }
 
 func router(res http.ResponseWriter, req *http.Request) {
+
+	res.Header().Set("Content-Type", "application/json")
 
 	switch req.Method {
 	case "GET":
@@ -94,7 +96,7 @@ func post(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// return object 
+	// return object
 	task_json, _ := json.Marshal(task)
 	fmt.Fprintf(res, string(task_json))
 }
@@ -113,11 +115,10 @@ func put(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// return object 
+	// return object
 	task_json, _ := json.Marshal(task)
 	fmt.Fprintf(res, string(task_json))
 }
-
 
 func archive(res http.ResponseWriter, req *http.Request) {
 
@@ -139,11 +140,10 @@ func archive(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// return object 
+	// return object
 	task_json, _ := json.Marshal(task)
 	fmt.Fprintf(res, string(task_json))
 }
-
 
 func renderTemplate(res http.ResponseWriter, template string, p *Page) {
 
