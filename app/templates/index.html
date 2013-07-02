@@ -64,9 +64,16 @@
 						<%= Title %>
 					</div>
 					<div class="meta grid-2">
+						<span class="edit-icon" title="Edit Task"></span>
 						<span class="clock-icon" title="<%- dt_created_fmt %>"></span>
 						<span class="trash-icon archive" title="Archive"></span>
 					</div>
+				</div>
+			</div>
+			<div class="edit">
+				<div class="grid-8">
+					<input type="text" class="edit-field" value="<%= Title %>">
+					<button class="btn" id="edit-save"> Save </button>
 				</div>
 			</div>
 		</script>

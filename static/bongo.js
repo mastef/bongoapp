@@ -53,6 +53,8 @@ $(function(){
 		template: _.template($('#item-template').html()),
 
 		events: {
+			"click .edit-icon"		: "edit_task",
+			"blur .edit"			: "edit_close",
 			"click .archive"        : "archive",
 			"click .check-box"      : "complete_task",
 		},
@@ -82,12 +84,27 @@ $(function(){
 		},
 
 
+		edit_task: function(e) {
+			this.$el.addClass("editing");
+			this.$el.find(".edit-field").focus();
+
+		},
+
+		edit_close: function(e) {
+			var el = this.$el.find(".edit-field").focus();
+			if (! el.val()) return;
+			this.model.save({title: el.val()});
+			this.$el.removeClass("editing");
+		},
+
+
 		complete_task: function(e) {
 			completed = this.model.get("Dt_completed");
 			cval = ( completed > 0 ) ? 0 : Date.now();
 			this.model.save({Dt_completed: cval, Id:this.model.get("Id")});
 
 		},
+
 
 		// destroy item, remove model from collection
 		archive: function() {
@@ -146,7 +163,6 @@ $(function(){
 				Dt_created: parseInt(new Date().getTime())
 			});
 			this.title.val('');			// reset form data
-			window.location.hash = '';	// close dialog box
 		},
 
 		checkForEnter: function(e) {

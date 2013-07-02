@@ -36,8 +36,6 @@ func init() {
 
 func router(res http.ResponseWriter, req *http.Request) {
 
-	res.Header().Set("Content-Type", "application/json")
-
 	switch req.Method {
 	case "GET":
 		get(res, req)
@@ -60,7 +58,10 @@ func home(res http.ResponseWriter, req *http.Request) {
 
 func logout(res http.ResponseWriter, req *http.Request) {
 	c := appengine.NewContext(req)
-	logout_url, _ := user.LogoutURL(c, "/")
+	logout_url, err := user.LogoutURL(c, "/")
+	if error_check(res, err) {
+		return
+	}
 	http.Redirect(res, req, logout_url, http.StatusTemporaryRedirect)
 }
 
@@ -70,8 +71,7 @@ func get(res http.ResponseWriter, req *http.Request) {
 	q := datastore.NewQuery("Task").Filter("State =", "active").Order("Title").Limit(50)
 	tasks := make([]Task, 0, 50)
 	keys, err := q.GetAll(c, &tasks)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+	if error_check(res, err) {
 		return
 	}
 
@@ -79,8 +79,7 @@ func get(res http.ResponseWriter, req *http.Request) {
 		tasks[i].Id = key.IntID()
 	}
 
-	data, _ := json.Marshal(tasks)
-	fmt.Fprintf(res, string(data))
+	jsonResponse(res, tasks)
 }
 
 func post(res http.ResponseWriter, req *http.Request) {
@@ -89,16 +88,13 @@ func post(res http.ResponseWriter, req *http.Request) {
 	var model = req.FormValue("model")
 	json.Unmarshal([]byte(model), &task)
 
-	// write to data store
 	_, err := datastore.Put(c, datastore.NewIncompleteKey(c, "Task", nil), &task)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+	if (error_check(res, err)) {
 		return
 	}
 
 	// return object
-	task_json, _ := json.Marshal(task)
-	fmt.Fprintf(res, string(task_json))
+	jsonResponse(res, task)
 }
 
 func put(res http.ResponseWriter, req *http.Request) {
@@ -109,15 +105,12 @@ func put(res http.ResponseWriter, req *http.Request) {
 
 	key := datastore.NewKey(c, "Task", "", task.Id, nil)
 	_, err := datastore.Put(c, key, &task)
-	if err != nil {
-		c.Errorf(err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+	if error_check(res, err) {
 		return
 	}
 
 	// return object
-	task_json, _ := json.Marshal(task)
-	fmt.Fprintf(res, string(task_json))
+	jsonResponse(res, task)
 }
 
 func archive(res http.ResponseWriter, req *http.Request) {
@@ -128,27 +121,40 @@ func archive(res http.ResponseWriter, req *http.Request) {
 	key := datastore.NewKey(c, "Task", "", taskId, nil)
 	task := new(Task)
 	err := datastore.Get(c, key, task)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+	if error_check(res, err) {
 		return
 	}
 
 	task.State = "archived"
 	_, err2 := datastore.Put(c, key, task)
-	if err2 != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+	if error_check(res, err2) {
 		return
 	}
 
 	// return object
-	task_json, _ := json.Marshal(task)
-	fmt.Fprintf(res, string(task_json))
+	jsonResponse(res, task)
 }
 
 func renderTemplate(res http.ResponseWriter, template string, p *Page) {
-
 	err := cached_templates.ExecuteTemplate(res, template, p)
+	error_check(res, err)
+}
+
+func jsonResponse(res http.ResponseWriter, data interface{}) {
+	res.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	payload, err := json.Marshal(data)
+	if (error_check(res, err)) {
+		return
+	}
+
+	fmt.Fprintf(res, string(payload))
+}
+
+func error_check(res http.ResponseWriter, err error) bool {
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return true
 	}
+	return false
 }

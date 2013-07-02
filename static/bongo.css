@@ -88,7 +88,8 @@ header #global-actions div#filter-btn {
 	padding: 0 0 16px 0;
 }
 
-#new-task-title {
+#new-task-title,
+.edit-field {
 	width: 80%;
 	line-height: 1.2em;
 	padding: 8px;
@@ -103,7 +104,8 @@ header #global-actions div#filter-btn {
 	border: 1px solid #DDDDDD;
 }
 
-#new-task-title:focus {
+#new-task-title:focus,
+.edit-field:focus {
 	-webkit-box-shadow: 0 0 8px #3498DB;
 	-moz-box-shadow: 0 0 8px #3498DB;
 	box-shadow: 0 0 8px #3498DB;
@@ -180,6 +182,18 @@ div.view .meta {
 	cursor: pointer;
 	margin-left: 0px;
 	color: #900;
+}
+
+.edit {
+	display: none;
+}
+
+.editing .view {
+	display: none;
+}
+
+.editing .edit {
+	display: block;
 }
 
 
@@ -299,29 +313,11 @@ div.view .meta {
 
 
 
-.add-icon:before {
-	content: '\f411';
-	-webkit-font-smoothing: antialiased;
-	font: normal 36px/1 'Genericons';
-}
-
-.search-icon:before {
-	content: '\f400';
-	-webkit-font-smoothing: antialiased;
-	font: normal 36px/1 'Genericons';
-}
-
 .all-icon:before {
 	content: '\f436';
 	-webkit-font-smoothing: antialiased;
 	font: normal 36px/1 'Genericons';
 	vertical-align: middle;
-}
-
-.close-icon:before {
-	content: '\f405';
-	-webkit-font-smoothing: antialiased;
-	font: normal 24px/1 'Genericons';
 }
 
 
@@ -354,8 +350,8 @@ div.view .meta {
 	vertical-align: middle;
 }
 
-.note-icon:before {
-	content: '\f443';
+.edit-icon:before {
+	content: '\f411';
 	-webkit-font-smoothing: antialiased;
 	font: normal 24px/1 'Genericons';
 	vertical-align: middle;
