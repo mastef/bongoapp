@@ -91,7 +91,7 @@ $(function(){
 		},
 
 		edit_close: function(e) {
-			var el = this.$el.find(".edit-field").focus();
+			var el = this.$el.find(".edit-field");
 			if (! el.val()) return;
 			this.model.save({title: el.val()});
 			this.$el.removeClass("editing");
