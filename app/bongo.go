@@ -88,7 +88,13 @@ func post(res http.ResponseWriter, req *http.Request) {
 	var model = req.FormValue("model")
 	json.Unmarshal([]byte(model), &task)
 
-	_, err := datastore.Put(c, datastore.NewIncompleteKey(c, "Task", nil), &task)
+	postKey, err := datastore.Put(c, datastore.NewIncompleteKey(c, "Task", nil), &task)
+	if (error_check(res, err)) {
+		return
+	}
+
+	task.Id = postKey.IntID()
+	postKey, err = datastore.Put(c, postKey, &task)
 	if (error_check(res, err)) {
 		return
 	}
